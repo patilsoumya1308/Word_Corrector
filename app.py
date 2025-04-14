@@ -1,71 +1,57 @@
 import streamlit as st
 from textblob import TextBlob
 
-# Custom CSS to mimic your style
+st.set_page_config(page_title="Spell Corrector", page_icon="📝", layout="centered")
+
+# Custom CSS styling
 st.markdown("""
     <style>
-    body {
-        background: rgb(230, 85, 230);
-    }
-    .main {
-        background-color: plum;
-        border-radius: 10px;
-        padding: 2rem;
-        max-width: 600px;
-        margin: auto;
-        color: black;
-    }
-    .stTextInput>div>div>input {
-        background-color: purple;
-        color: white;
-        text-align: center;
-        height: 50px;
-        font-size: 20px;
-    }
-    .stTextInput>div>div>input::placeholder {
-        color: white;
-        opacity: 1;
-    }
-    .stButton>button {
-        background-color: purple;
-        color: white;
-        font-size: 20px;
-        border-radius: 4px;
-        width: 100%;
-        padding: 12px;
-    }
-    .results {
-        margin-top: 1.5rem;
-        padding: 1rem;
-        background: purple;
-        border-radius: 4px;
-        color: white;
-    }
-    .results p {
-        background: rgba(255, 255, 255, 0.05);
-        padding: 10px;
-        border-radius: 4px;
-    }
+        body {
+            background: rgb(230, 85, 230);
+        }
+        .main {
+            background-color: plum;
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 600px;
+            margin: auto;
+        }
+        .stTextInput input {
+            background-color: purple;
+            color: white;
+            height: 50px;
+            font-size: 20px;
+            text-align: center;
+        }
+        .stButton>button {
+            background-color: purple;
+            color: white;
+            font-size: 20px;
+        }
     </style>
 """, unsafe_allow_html=True)
 
-# Container for layout
-with st.container():
-    st.markdown('<div class="main">', unsafe_allow_html=True)
-    st.markdown("<h2 style='text-align:center;'>Words Corrector</h2>", unsafe_allow_html=True)
+# Main content
+st.markdown("<div class='main'>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align:center;color:black;'>Words Corrector</h2>", unsafe_allow_html=True)
 
-    text_input = st.text_input("Enter Wrong Words...", placeholder="Enter Wrong Words...")
+text_input = st.text_input("Enter Wrong Words...", "")
 
-    if st.button("Check Words"):
-        if text_input:
-            blob = TextBlob(text_input)
-            corrected = str(blob.correct())
-            wrong_words = ", ".join([word for word in text_input.split() if word not in corrected.split()])
-
-            st.markdown('<div class="results">', unsafe_allow_html=True)
-            st.markdown("<h3>Wrong Words :</h3>", unsafe_allow_html=True)
-            st.markdown(f"<p>{wrong_words}</p>", unsafe_allow_html=True)
-            st.markdown("<h3>Corrected Words :</h3>", unsafe_allow_html=True)
-            st.markdown(f"<p>{corrected}</p>", unsafe_allow_html=True)
-            st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+if st.button("Check Words"):
+    if text_input.strip() == "":
+        st.warning("Please enter some text.")
+    else:
+        blob = TextBlob(text_input)
+        corrected_text = str(blob.correct())
+        if corrected_text != text_input:
+            st.markdown("""
+                <div style='background: purple; padding: 1rem; border-radius: 4px; color: white;'>
+                    <h3>Wrong Words:</h3>
+                    <p>{}</p>
+                    <h3>Corrected Words:</h3>
+                    <p>{}</p>
+                </div>
+            """.format(text_input, corrected_text), unsafe_allow_html=True)
+        else:
+            st.success("No corrections needed!")
+st.markdown("</div>", unsafe_allow_html=True)
