@@ -1,15 +1,7 @@
 import streamlit as st
 from textblob import TextBlob
-import nltk
 
-# Download necessary NLTK corpora
-nltk.download('brown')
-nltk.download('punkt')
-
-# Page config
-st.set_page_config(page_title="Words Corrector", page_icon="📝", layout="centered")
-
-# Styling (similar to your HTML/CSS)
+# Custom CSS to mimic your style
 st.markdown("""
     <style>
     body {
@@ -17,45 +9,63 @@ st.markdown("""
     }
     .main {
         background-color: plum;
+        border-radius: 10px;
         padding: 2rem;
-        border-radius: 8px;
         max-width: 600px;
         margin: auto;
         color: black;
-        font-family: Arial, sans-serif;
     }
-    .stTextInput input {
-        background: purple;
+    .stTextInput>div>div>input {
+        background-color: purple;
         color: white;
-        font-size: 20px;
-        height: 50px;
         text-align: center;
+        height: 50px;
+        font-size: 20px;
+    }
+    .stTextInput>div>div>input::placeholder {
+        color: white;
+        opacity: 1;
     }
     .stButton>button {
         background-color: purple;
         color: white;
         font-size: 20px;
+        border-radius: 4px;
+        width: 100%;
         padding: 12px;
+    }
+    .results {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: purple;
+        border-radius: 4px;
+        color: white;
+    }
+    .results p {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 10px;
         border-radius: 4px;
     }
     </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<div class="main"><h2 style="text-align:center;">Words Corrector</h2>', unsafe_allow_html=True)
+# Container for layout
+with st.container():
+    st.markdown('<div class="main">', unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align:center;'>Words Corrector</h2>", unsafe_allow_html=True)
 
-user_input = st.text_input("Enter Wrong Words...")
+    text_input = st.text_input("Enter Wrong Words...", placeholder="Enter Wrong Words...")
 
-if st.button("Check Words"):
-    if user_input.strip():
-        words = user_input.split()
-        corrected_words = [str(TextBlob(word).correct()) for word in words]
-        corrected = " ".join(corrected_words)
+    if st.button("Check Words"):
+        if text_input:
+            blob = TextBlob(text_input)
+            corrected = str(blob.correct())
+            wrong_words = ", ".join([word for word in text_input.split() if word not in corrected.split()])
 
-        st.markdown('<div class="results">', unsafe_allow_html=True)
-        st.subheader("Wrong Words :")
-        st.write(words)
-        st.subheader("Corrected Words :")
-        st.write(corrected)
-        st.markdown('</div></div>', unsafe_allow_html=True)
-    else:
-        st.warning("Please enter some text.")
+            st.markdown('<div class="results">', unsafe_allow_html=True)
+            st.markdown("<h3>Wrong Words :</h3>", unsafe_allow_html=True)
+            st.markdown(f"<p>{wrong_words}</p>", unsafe_allow_html=True)
+            st.markdown("<h3>Corrected Words :</h3>", unsafe_allow_html=True)
+            st.markdown(f"<p>{corrected}</p>", unsafe_allow_html=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
