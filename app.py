@@ -1,18 +1,21 @@
 import streamlit as st
-from textblob import TextBlob
+from spellchecker import SpellChecker
 
-st.title("Spell Checker using TextBlob")
+# Initialize Streamlit app
+st.title("Words Corrector")
 
-# Input list of words
-words_input = st.text_input("Enter words separated by commas", "Machne, Learnin")
+# User Input
+wrong_words_input = st.text_input("Enter Wrong Words...")
 
-# Process input
-if words_input:
-    words = [word.strip() for word in words_input.split(",")]
-    corrected_words = [TextBlob(word).correct() for word in words]
-
-    st.write("### Wrong Words:")
-    st.write(words)
-
-    st.write("### Corrected Words:")
-    st.write([str(word) for word in corrected_words])
+# Button to Check Words
+if st.button("Check Words"):
+    # Process input
+    spell = SpellChecker()
+    wrong_words = wrong_words_input.split(',')
+    corrected_words = [spell.candidates(word.strip()) for word in wrong_words]
+    
+    # Displaying results
+    st.subheader("Wrong Words :")
+    st.write([word.strip() for word in wrong_words])  # Show the wrong words
+    st.subheader("Corrected Words :")
+    st.write([spell.candidates(word.strip()).pop() for word in wrong_words])  # Show corrected words
